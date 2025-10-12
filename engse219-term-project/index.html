@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Stardew Valley Database Manager</title>
+    <style>
+        body { font-family: sans-serif; max-width: 800px; margin: auto; padding: 20px; background-color: #f0f8ff; }
+        .container { background-color: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 20px; }
+        h1, h2, h3 { color: #333; }
+        input[type="number"], select { padding: 8px; margin-right: 10px; border: 1px solid #ccc; border-radius: 4px; }
+        button { padding: 8px 15px; background-color: #4CAF50; color: white; border: none; border-radius: 4px; cursor: pointer; }
+        button:hover { background-color: #45a049; }
+        #result, #add-item-result { margin-top: 15px; padding: 15px; border-left: 4px solid #4CAF50; background-color: #f9f9f9; }
+    </style>
+</head>
+<body>
+
+    <h1>Stardew Valley Database Manager</h1>
+
+    <div class="container">
+        <h2>Get Farmer Information</h2>
+        <input type="number" id="farmerIdInput" placeholder="Enter Farmer ID (e.g., 2)">
+        <button onclick="getFarmerData()">Get Data</button>
+        <div id="result">Enter an ID and click the button.</div>
+    </div>
+
+    <div class="container">
+        <h2>Add Item to Inventory</h2>
+        <form id="addItemForm">
+            <label>Farmer:</label>
+            <select id="farmerSelect" name="farmer_id"></select>
+            <label>Item:</label>
+            <select id="itemSelect" name="item_id"></select>
+            <label>Quantity:</label>
+            <input type="number" name="quantity" value="1" min="1">
+            <button type="submit">Add Item</button>
+        </form>
+        <div id="add-item-result"></div>
+    </div>
+    
+    <a href="leaderboard.html">View Farmer Leaderboard</a>
+
+    <script>
+        // --- Function to get Farmer Data ---
+        function getFarmerData() {
+            const farmerId = document.getElementById('farmerIdInput').value;
+            const resultDiv = document.getElementById('result');
+            if (!farmerId) {
+                resultDiv.innerHTML = "Please enter a Farmer ID.";
+                return;
+            }
+            resultDiv.innerHTML = 'Loading...';
+
+            fetch(`api.php?action=get_farmer&farmer_id=${farmerId}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        resultDiv.innerHTML = `<p>Error: ${data.error}</p>`;
+                    } else {
+                        resultDiv.innerHTML = `
+                            <h3>${data.farm_name}</h3>
+                            <p><strong>Player:</strong> ${data.username}</p>
+                            <p><strong>Money:</strong> ${data.money}g</p>
+                            <h4>Skills:</h4>
+                            <ul>${data.skills.map(skill => `<li>${skill.name}: Level ${skill.level}</li>`).join('')}</ul>
+                            <h4>Equipped Buffs:</h4>
+                            <ul>
+                                <li>Combat: +${data.buffs.total_combat_buff}</li>
+                                <li>Defense: +${data.buffs.total_defense_buff}</li>
+                                <li>Luck: +${data.buffs.total_luck_buff}</li>
+                            </ul>`;
+                    }
+                })
+                .catch(error => {
+                    resultDiv.innerHTML = `<p>Failed to fetch data. See console for details.</p>`;
+                    console.error('Error:', error);
+                });
+        }
+
+        // --- Functions to populate dropdowns on page load ---
+        function populateDropdown(selectId, apiUrl, nameField, valueField) {
+            const selectElement = document.getElementById(selectId);
+            fetch(apiUrl)
+                .then(response => response.json())
+                .then(data => {
+                    data.forEach(item => {
+                        const option = document.createElement('option');
+                        option.value = item[valueField];
+                        option.textContent = item[nameField];
+                        selectElement.appendChild(option);
+                    });
+                });
+        }
+
+        window.onload = function() {
+            populateDropdown('farmerSelect', 'api.php?action=get_all_farmers', 'farm_name', 'farmer_id');
+            populateDropdown('itemSelect', 'api.php?action=get_all_items', 'name', 'item_id');
+        };
+
+        // --- Function to handle Add Item form submission ---
+        document.getElementById('addItemForm').addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent default form submission
+            
+            const formData = new FormData(this);
+            const resultDiv = document.getElementById('add-item-result');
+            resultDiv.innerHTML = 'Adding...';
+
+            fetch('api.php?action=add_item', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    resultDiv.innerHTML = `<p style="color: green;">${data.success}</p>`;
+                } else {
+                    resultDiv.innerHTML = `<p style="color: red;">Error: ${data.error}</p>`;
+                }
+            });
+        });
+    </script>
+</body>
+</html>
