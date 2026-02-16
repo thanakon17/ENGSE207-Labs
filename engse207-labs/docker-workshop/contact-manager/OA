@@ -1,0 +1,32 @@
+[33mtag v2.0[m
+Tagger: thanakon17 <thanakon.170147@gmail.com>
+Date:   Wed Jan 28 13:28:36 2026 +0700
+
+Release v2.0 - Bug #001 Fixed
+
+[33mcommit 07e5ff1b5d10aec80da1d7e7feaa543daddddc27[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmaster[m[33m, [m[1;33mtag: [m[1;33mv2.0[m[33m)[m
+Author: thanakon17 <thanakon.170147@gmail.com>
+Date:   Wed Jan 28 13:26:45 2026 +0700
+
+    fix(frontend): add validation
+
+[1mdiff --git a/docs/BUG_REPORT.md b/docs/BUG_REPORT.md[m
+[1mnew file mode 100644[m
+[1mindex 0000000..6fcbe89[m
+[1m--- /dev/null[m
+[1m+++ b/docs/BUG_REPORT.md[m
+[36m@@ -0,0 +1,14 @@[m
+[32m+[m[32m# 🐛 Bug Report[m
+[32m+[m
+[32m+[m[32m## Bug #001: Name Length Validation Missing[m
+[32m+[m
+[32m+[m[32m**Reporter:** สมศักดิ์[m[41m  [m
+[32m+[m[32m**Severity:** High[m[41m  [m
+[32m+[m[32m**Status:** Open 🔴[m
+[32m+[m
+[32m+[m[32m### Description[m
+[32m+[m[32mชื่อยาวเกิน 50 ตัว → แสดง database error แทน user-friendly message[m
+[32m+[m
+[32m+[m[32m### Expected[m
+[32m+[m[32m```json[m
+[32m+[m[32m{"success":false,"error":"ชื่อต้องไม่เกิน 50 ตัวอักษร"}[m
