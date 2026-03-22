@@ -14,7 +14,6 @@ https://taskboard.local
 ```
 
 ```bash
-```text
 week6-ntier/
 ├── database/              # Data Tier: SQL scripts & Database initialization
 │   └── init.sql           # PostgreSQL schema and sample data
