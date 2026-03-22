@@ -14,9 +14,6 @@ https://taskboard.local
 ```
 
 ```bash
-week6-ntier/
-## 📂 Project Structure
-
 ```text
 week6-ntier/
 ├── database/              # Data Tier: SQL scripts & Database initialization
